@@ -1,192 +1,238 @@
-import { Canvas } from "@react-three/fiber";
 import { useEffect } from "react";
 import * as THREE from "three";
-import { PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+import {
+  BufferGeometry,
+  PerspectiveCamera,
+  Points,
+  PointsMaterial,
+  Scene,
+  Vector3,
+  WebGLRenderer,
+} from "three";
 
-// class Stage {
-//   constructor(
-//     public renderParam: { width: number; height: number },
-//     public cameraParam: { fov: number; lookAt: Vector3 },
-//     public fogParam: { color: number; start: number; end: number; fog: any },
-//     public scene: Scene,
-//     public camera: PerspectiveCamera,
-//     public renderer: WebGLRenderer,
-//     public isInitialized: boolean
-//   ) {
-//     renderParam = {
-//       width: window.innerWidth,
-//       height: window.innerHeight,
-//     };
+class Stage {
+  public renderParam: { width: number; height: number };
+  public cameraParam: { fov: number; lookAt: Vector3 };
+  public fogParam: { color: number; start: number; end: number };
+  public scene: Scene | null;
+  public camera: PerspectiveCamera | null;
+  public renderer: WebGLRenderer | null;
+  public geometry: BufferGeometry | null;
+  public material: PointsMaterial | null;
+  public mesh: Points | null;
+  public isInitialized: boolean;
 
-//     cameraParam = {
-//       fov: 70,
-//       lookAt: new THREE.Vector3(0, 0, 0),
-//     };
+  constructor() {
+    this.renderParam = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
 
-//     fogParam = {
-//       color: 0x000000,
-//       start: 50,
-//       end: 2000,
-//       fog: null,
-//     };
+    this.cameraParam = {
+      fov: 70,
+      lookAt: new THREE.Vector3(0, 0, 0),
+    };
 
-//     // this.camera = null;
-//     // this.renderer = null;
-//     // this.geometry = null;
-//     // this.material = null;
-//     // this.mesh = null;
-//     // this.isInitialized = false;
-//   }
+    this.fogParam = {
+      color: 0x000000,
+      start: 50,
+      end: 2000,
+    };
 
-//   init() {
-//     this._setScene();
-//     this._setRender();
-//     this._setCamera();
-//     this._setFog();
-//     this.isInitialized = true;
-//   }
+    this.scene = null;
+    this.camera = null;
+    this.renderer = null;
+    this.geometry = null;
+    this.material = null;
+    this.mesh = null;
+    this.isInitialized = false;
+  }
 
-//   _setScene() {
-//     this.scene = new THREE.Scene();
-//   }
+  init() {
+    this._setScene();
+    this._setRender();
+    this._setCamera();
+    this._setFog();
 
-//   _setRender() {
-//     this.renderer = new THREE.WebGLRenderer({
-//       canvas: document.getElementById("webgl-canvas") ?? undefined,
-//       alpha: true,
-//     });
-//     this.renderer.setPixelRatio(window.devicePixelRatio);
-//     this.renderer.setSize(this.renderParam.width, this.renderParam.height);
-//   }
+    this.isInitialized = true;
+  }
 
-//   _setCamera() {
-//     const windowWidth = window.innerWidth;
-//     const windowHeight = window.innerHeight;
+  _setScene() {
+    this.scene = new THREE.Scene();
+  }
 
-//     if (!this.isInitialized) {
-//       this.camera = new THREE.PerspectiveCamera(
-//         this.cameraParam.fov,
-//         this.renderParam.width / this.renderParam.height
-//       );
+  _setRender() {
+    console.log("constructor");
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: document.getElementById("webgl-canvas") ?? undefined,
+      alpha: true,
+    });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(
+      this.renderParam?.width ?? 0,
+      this.renderParam?.height ?? 0
+    );
+  }
 
-//       this.camera.lookAt(this.cameraParam.lookAt);
-//     }
+  _setCamera() {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
 
-//     this.camera.aspect = windowWidth / windowHeight;
-//     this.camera.updateProjectionMatrix();
-//     this.renderer.setPixelRatio(window.devicePixelRatio);
-//     this.renderer.setSize(windowWidth, windowHeight);
-//   }
+    if (!this.isInitialized) {
+      this.camera = new THREE.PerspectiveCamera(
+        this.cameraParam?.fov,
+        (this.renderParam?.width ?? 1) / (this.renderParam?.height ?? 1)
+      );
 
-//   _setFog() {
-//     this.scene.fog = new THREE.Fog(
-//       this.fogParam.fov,
-//       this.fogParam.start,
-//       this.fogParam.end
-//     );
-//   }
+      this.camera.lookAt(this.cameraParam?.lookAt ?? new Vector3());
+    }
 
-//   _render() {
-//     let rot = 0;
-//     const radian = (rot * Math.PI) / 180;
+    if (this.camera) {
+      this.camera.aspect = windowWidth / windowHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer?.setPixelRatio(window.devicePixelRatio);
+      this.renderer?.setSize(windowWidth, windowHeight);
+    }
+  }
 
-//     rot += 0.1;
-//     this.camera.position.x = 1000 * Math.sin(radian);
-//     this.camera.position.z = 1000 * Math.cos(radian);
-//     this.renderer.render(this.scene, this.camera);
-//   }
+  _setFog() {
+    if (this.scene) {
+      this.scene.fog = new THREE.Fog(
+        this.fogParam?.color,
+        this.fogParam?.start,
+        this.fogParam?.end
+      );
+    }
+  }
 
-//   onResize() {
-//     this._setCamera();
-//   }
+  _render() {
+    let rot = 0;
+    const radian = (rot * Math.PI) / 180;
 
-//   onRaf() {
-//     this._render();
-//   }
-// }
+    rot += 0.1;
+    if (this.camera) {
+      this.camera.position.x = 1000 * Math.sin(radian);
+      this.camera.position.z = 1000 * Math.cos(radian);
+      this.renderer?.render(this.scene ?? new Scene(), this.camera);
+    }
+  }
 
-// class Mesh {
-//   constructor(stage: Stage) {
-//     this.stage = stage;
-//     this.mesh = null;
-//   }
+  onResize() {
+    this._setCamera();
+  }
 
-//   init() {
-//     this._setMesh();
-//   }
+  onRaf() {
+    this._render();
+  }
+}
 
-//   _setMesh() {
-//     const vertices = [];
-//     const SIZE = 3000;
-//     const LENGTH = 3000;
-//     const geometry = new THREE.BufferGeometry();
-//     const material = new THREE.PointsMaterial({
-//       color: 0xffffff,
-//     });
+class Mesh {
+  public stage: Stage;
+  public mesh: Points | null;
 
-//     for (let i = 0; i < LENGTH; i++) {
-//       const x = SIZE * (Math.random() - 0.5);
-//       const y = SIZE * (Math.random() - 0.5);
-//       const z = SIZE * (Math.random() - 0.5);
+  constructor(stage: Stage) {
+    this.stage = stage;
+    this.mesh = null;
+  }
 
-//       vertices.push(x, y, z);
-//     }
+  init() {
+    this._setMesh();
+  }
 
-//     geometry.setAttribute(
-//       "position",
-//       new THREE.Float32BufferAttribute(vertices, 3)
-//     );
+  _setMesh() {
+    const vertices = [];
+    const SIZE = 3000;
+    const LENGTH = 3000;
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.PointsMaterial({
+      color: 0xffffff,
+    });
 
-//     this.mesh = new THREE.Points(geometry, material);
-//     this.stage.scene.add(this.mesh);
-//   }
+    for (let i = 0; i < LENGTH; i++) {
+      const x = SIZE * (Math.random() - 0.5);
+      const y = SIZE * (Math.random() - 0.5);
+      const z = SIZE * (Math.random() - 0.5);
 
-//   _render() {
-//     this.mesh.rotation.y += 0.001;
-//   }
+      vertices.push(x, y, z);
+    }
 
-//   onRaf() {
-//     this._render();
-//   }
-// }
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(vertices, 3)
+    );
+
+    this.mesh = new THREE.Points(geometry, material);
+    this.stage?.scene?.add(this.mesh);
+  }
+
+  _render() {
+    if (this.mesh) {
+      this.mesh.rotation.y += 0.001;
+    }
+  }
+
+  onRaf() {
+    this._render();
+  }
+}
 
 function App() {
   useEffect(() => {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      50,
-      window.innerWidth / window.innerHeight,
-      1,
-      1000
-    );
-    camera.position.z = 96;
-    const canvas = document.getElementById("myThreeJsCanvas");
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvas ?? undefined,
-      antialias: true,
+    const stage = new Stage();
+    const mesh = new Mesh(stage);
+
+    stage.init();
+    mesh.init();
+
+    window.addEventListener("resize", () => {
+      stage.onResize();
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    ambientLight.castShadow = true;
-    scene.add(ambientLight);
-    const spotLight = new THREE.SpotLight(0xffffff, 1);
-    spotLight.castShadow = true;
-    spotLight.position.set(0, 64, 32);
-    scene.add(spotLight);
-    const boxGeometry = new THREE.BoxGeometry(16, 16, 16);
-    const boxMaterial = new THREE.MeshNormalMaterial();
-    const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
-    scene.add(boxMesh);
-    const animate = () => {
-      boxMesh.rotation.x += 0.01;
-      boxMesh.rotation.y += 0.01;
-      boxMesh.rotation.z += 0.01;
-      // boxMesh.rotation.y += 0.01;
-      renderer.render(scene, camera);
-      window.requestAnimationFrame(animate);
+
+    const _raf = () => {
+      window.requestAnimationFrame(() => {
+        stage.onRaf();
+        mesh.onRaf();
+
+        _raf();
+      });
     };
-    animate();
+
+    _raf();
+
+    // const scene = new THREE.Scene();
+    // const camera = new THREE.PerspectiveCamera(
+    //   50,
+    //   window.innerWidth / window.innerHeight,
+    //   1,
+    //   1000
+    // );
+    // camera.position.z = 96;
+    // const canvas = document.getElementById("myThreeJsCanvas");
+    // const renderer = new THREE.WebGLRenderer({
+    //   canvas: canvas ?? undefined,
+    //   antialias: true,
+    // });
+    // renderer.setSize(window.innerWidth, window.innerHeight);
+    // document.body.appendChild(renderer.domElement);
+    // const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // ambientLight.castShadow = true;
+    // scene.add(ambientLight);
+    // const spotLight = new THREE.SpotLight(0xffffff, 1);
+    // spotLight.castShadow = true;
+    // spotLight.position.set(0, 64, 32);
+    // scene.add(spotLight);
+    // const boxGeometry = new THREE.BoxGeometry(16, 16, 16);
+    // const boxMaterial = new THREE.MeshNormalMaterial();
+    // const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
+    // scene.add(boxMesh);
+    // const animate = () => {
+    //   boxMesh.rotation.x += 0.01;
+    //   boxMesh.rotation.y += 0.01;
+    //   boxMesh.rotation.z += 0.01;
+    //   renderer.render(scene, camera);
+    //   window.requestAnimationFrame(animate);
+    // };
+    // animate();
   }, []);
 
   return (
