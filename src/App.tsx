@@ -62,9 +62,8 @@ class Stage {
   }
 
   _setRender() {
-    console.log("constructor");
     this.renderer = new THREE.WebGLRenderer({
-      canvas: document.getElementById("webgl-canvas") ?? undefined,
+      canvas: document.getElementById("myThreeJsCanvas") ?? undefined,
       alpha: true,
     });
     this.renderer.setPixelRatio(window.devicePixelRatio);
