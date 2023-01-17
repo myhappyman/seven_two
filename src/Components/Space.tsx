@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { ChangeEvent, useEffect } from "react";
 import * as THREE from "three";
 import {
   BufferGeometry,
@@ -21,6 +21,7 @@ class Stage {
   public material: PointsMaterial | null;
   public mesh: Points | null;
   public isInitialized: boolean;
+  public mouse: { x: number; y: number };
 
   constructor() {
     this.renderParam = {
@@ -46,6 +47,7 @@ class Stage {
     this.material = null;
     this.mesh = null;
     this.isInitialized = false;
+    this.mouse = { x: 0, y: 0 };
   }
 
   init() {
@@ -59,6 +61,7 @@ class Stage {
 
   _setScene() {
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x0d0d0d);
   }
 
   _setRender() {
@@ -111,15 +114,27 @@ class Stage {
 
     rot += 0.1;
     if (this.camera) {
-      this.camera.position.x = 1000 * Math.sin(radian);
-      this.camera.position.z = 1000 * Math.cos(radian);
+      this.camera.position.x = 1000 * Math.sin(radian) + this.mouse.x;
+      this.camera.position.z = 1000 * Math.cos(radian) + this.mouse.y;
       this.renderer?.render(this.scene ?? new Scene(), this.camera);
     }
   }
 
+  // _setMoveCamera() {
+  //   if (this.camera) {
+  //     this.camera.position.x = this.mouse.x;
+  //     this.camera.position.z = this.mouse.y;
+  //     this.renderer?.render(this.scene ?? new Scene(), this.camera);
+  //   }
+  // }
+
   onResize() {
     this._setCamera();
   }
+
+  // onMouseMove() {
+  //   this._setMoveCamera();
+  // }
 
   onRaf() {
     this._render();
@@ -129,10 +144,18 @@ class Stage {
 class Mesh {
   public stage: Stage;
   public mesh: Points | null;
+  public vertices: number[];
+  public colors: number[];
+  public SIZE: number;
+  public LENGTH: number;
 
   constructor(stage: Stage) {
     this.stage = stage;
     this.mesh = null;
+    this.vertices = [];
+    this.colors = [];
+    this.SIZE = 3000;
+    this.LENGTH = 50000;
   }
 
   init() {
@@ -140,28 +163,47 @@ class Mesh {
   }
 
   _setMesh() {
-    const vertices = [];
-    const SIZE = 3000;
-    const LENGTH = 50000;
+    // const pallet1 = [0, 255, 95, 138];
+    // const pallet2 = [84, 255, 0, 138];
+    // const pallet3 = [255, 255, 255, 255];
+    const r = [1, 255];
+    const g = [0, 255];
+    const b = [255, 255];
     const geometry = new THREE.BufferGeometry();
     const material = new THREE.PointsMaterial({
       color: 0x888888,
     });
-    material.size = 0.2;
+    material.size = 1;
     material.sizeAttenuation = true;
-    material.alphaTest = 0.001;
+    material.color = new THREE.Color("#FFFEFF");
+    // material.color = new THREE.Color("#1E1EFF");
+    material.transparent = true;
+    material.depthWrite = false;
+    material.vertexColors = true;
+    // material.alphaTest = 0.001;
 
-    for (let i = 0; i < LENGTH; i++) {
-      const x = SIZE * (Math.random() - 0.5);
-      const y = SIZE * (Math.random() - 0.5);
-      const z = SIZE * (Math.random() - 0.5);
+    for (let i = 0; i < this.LENGTH; i++) {
+      const x = this.SIZE * (Math.random() - 0.5);
+      const y = this.SIZE * (Math.random() - 0.5);
+      const z = this.SIZE * (Math.random() - 0.5);
+      // const idx = Math.round(Math.random() * r.length);
+      this.vertices.push(x, y, z);
 
-      vertices.push(x, y, z);
+      if (-900 < x && x < 900 && -900 < y && y < 900 && -900 < z && z < 900) {
+        this.colors.push(r[0], g[0], b[0]);
+      } else {
+        this.colors.push(r[1], g[1], b[1]);
+      }
     }
 
     geometry.setAttribute(
       "position",
-      new THREE.Float32BufferAttribute(vertices, 3)
+      new THREE.Float32BufferAttribute(this.vertices, 3)
+    );
+
+    geometry.setAttribute(
+      "color",
+      new THREE.Float32BufferAttribute(this.colors, 3)
     );
 
     this.mesh = new THREE.Points(geometry, material);
@@ -170,8 +212,9 @@ class Mesh {
 
   _render() {
     if (this.mesh) {
-      //   this.mesh.rotation.z += 0.001;
-      //   this.mesh.rotation.y += 0.001;
+      this.mesh.rotation.x += 0.001;
+      this.mesh.rotation.y += 0.001;
+      this.mesh.rotation.z += 0.001;
     }
   }
 
@@ -192,6 +235,14 @@ function Space() {
       stage.onResize();
     });
 
+    document.addEventListener("mousemove", onDocumentMouseMove, false);
+
+    function onDocumentMouseMove(event: any) {
+      event.preventDefault();
+      stage.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      stage.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      // stage.onMouseMove();
+    }
     const _raf = () => {
       window.requestAnimationFrame(() => {
         stage.onRaf();
