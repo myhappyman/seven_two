@@ -1,4 +1,5 @@
-import { ChangeEvent, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import styled from "styled-components";
 import * as THREE from "three";
 import {
   BufferGeometry,
@@ -9,6 +10,10 @@ import {
   Vector3,
   WebGLRenderer,
 } from "three";
+
+const Wrapper = styled.div`
+  overflow: hidden;
+`;
 
 class Stage {
   public renderParam: { width: number; height: number };
@@ -22,6 +27,7 @@ class Stage {
   public mesh: Points | null;
   public isInitialized: boolean;
   public mouse: { x: number; y: number };
+  public rot: number;
 
   constructor() {
     this.renderParam = {
@@ -48,6 +54,7 @@ class Stage {
     this.mesh = null;
     this.isInitialized = false;
     this.mouse = { x: 0, y: 0 };
+    this.rot = 0;
   }
 
   init() {
@@ -95,6 +102,11 @@ class Stage {
       this.camera.updateProjectionMatrix();
       this.renderer?.setPixelRatio(window.devicePixelRatio);
       this.renderer?.setSize(windowWidth, windowHeight);
+
+      // this.controls = new OrbitControlsImpl(
+      //   this.camera,
+      //   this.renderer?.domElement
+      // );
     }
   }
 
@@ -109,13 +121,14 @@ class Stage {
   }
 
   _render() {
-    let rot = 0;
-    const radian = (rot * Math.PI) / 180;
-
-    rot += 0.1;
+    // const radian = ((this.rot + this.mouse.x + this.mouse.y) * Math.PI) / 180;
+    const radian = (this.rot * Math.PI) / 180;
+    this.rot += 0.01;
     if (this.camera) {
-      this.camera.position.x = 1000 * Math.sin(radian) + this.mouse.x;
-      this.camera.position.z = 1000 * Math.cos(radian) + this.mouse.y;
+      this.camera.position.x = 1000 * Math.sin(radian);
+      // this.camera.position.y = 1000 * Math.cos(radian);
+      // this.camera.position.z = 1000 * Math.cos(radian);
+      this.camera.position.set(this.mouse.x, this.mouse.y, 100);
       this.renderer?.render(this.scene ?? new Scene(), this.camera);
     }
   }
@@ -239,8 +252,10 @@ function Space() {
 
     function onDocumentMouseMove(event: any) {
       event.preventDefault();
-      stage.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      stage.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      // stage.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      // stage.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      stage.mouse.x = event.clientX;
+      stage.mouse.y = -event.clientY;
       // stage.onMouseMove();
     }
     const _raf = () => {
@@ -256,12 +271,9 @@ function Space() {
   }, []);
 
   return (
-    <>
-      <canvas
-        style={{ width: window.innerWidth, height: window.innerHeight }}
-        id="myThreeJsCanvas"
-      />
-    </>
+    <Wrapper>
+      <canvas id="myThreeJsCanvas" />
+    </Wrapper>
   );
 }
 

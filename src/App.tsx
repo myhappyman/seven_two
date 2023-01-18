@@ -1,4 +1,9 @@
+import styled from "styled-components";
 import Space from "./Components/Space";
+
+const Wrapper = styled.div`
+  overflow: hidden;
+`;
 
 function App() {
   // const scene = new THREE.Scene();
@@ -36,7 +41,11 @@ function App() {
   // };
   // animate();
 
-  return <Space />;
+  return (
+    <Wrapper>
+      <Space />
+    </Wrapper>
+  );
 }
 
 export default App;
