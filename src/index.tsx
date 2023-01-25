@@ -32,13 +32,14 @@ const GlobalStyle = createGlobalStyle`
   @media screen and (min-width:600px){html{font-size:10px !important;}}
   @media screen and (min-width:820px){html{font-size:10px !important;}}
 
-  body {font-size:1rem !important;}
+  body {font-size:1rem !important; overflow: hidden;}
 
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     border: 0;
+    outline: none;    
   }
   html, body, div, span, applet, object, iframe,
   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -122,12 +123,12 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
-    </RecoilRoot>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <RecoilRoot>
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
+  </RecoilRoot>
+  // </React.StrictMode>
 );

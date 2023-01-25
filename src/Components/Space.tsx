@@ -254,8 +254,8 @@ function Space() {
       event.preventDefault();
       // stage.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       // stage.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      stage.mouse.x = event.clientX;
-      stage.mouse.y = -event.clientY;
+      stage.mouse.x = event.clientX / 2;
+      stage.mouse.y = event.clientY / 2;
       // stage.onMouseMove();
     }
     const _raf = () => {

@@ -1,8 +1,13 @@
 import styled from "styled-components";
-import Space from "./Components/Space";
+// import Space from "./Components/Space";
+import Basic from "./study/Basic";
 
 const Wrapper = styled.div`
-  overflow: hidden;
+  /* position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; */
 `;
 
 function App() {
@@ -43,7 +48,8 @@ function App() {
 
   return (
     <Wrapper>
-      <Space />
+      {/* <Space /> */}
+      <Basic />
     </Wrapper>
   );
 }
