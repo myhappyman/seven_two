@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import styled from "styled-components";
 import * as THREE from "three";
-import { Light } from "three";
 
 const Wrapper = styled.div`
   position: absolute;
@@ -20,6 +19,10 @@ class Cube {
   private cube: THREE.Mesh | null;
 
   constructor() {
+    this.camera = null;
+    this.light = null;
+    this.cube = null;
+
     this.divContainer = document.querySelector("#webgl-container");
 
     //antialias true옵션을 사용하면 3D 오브젝트들의 경계선의 계단현상 없이 부드럽게 표현이 된다.
@@ -36,10 +39,6 @@ class Cube {
     this.resize();
 
     requestAnimationFrame(this.render.bind(this));
-
-    this.camera = null;
-    this.light = null;
-    this.cube = null;
   }
 
   //카메라 생성 메소드

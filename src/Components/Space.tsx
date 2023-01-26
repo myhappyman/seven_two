@@ -1,35 +1,43 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
-import * as THREE from "three";
 import {
-  BufferGeometry,
-  PerspectiveCamera,
-  Points,
-  PointsMaterial,
   Scene,
-  Vector3,
+  PerspectiveCamera,
   WebGLRenderer,
+  BufferGeometry,
+  PointsMaterial,
+  Points,
+  Vector3,
+  Color,
+  Fog,
 } from "three";
+import { OrbitControls } from "three-orbitcontrols-ts";
+import { Float32BufferAttribute } from "three/src/Three";
 
 const Wrapper = styled.div`
   overflow: hidden;
 `;
 
 class Stage {
-  public renderParam: { width: number; height: number };
-  public cameraParam: { fov: number; lookAt: Vector3 };
-  public fogParam: { color: number; start: number; end: number };
+  private wrapper: HTMLElement | undefined;
+  private renderParam: { width: number; height: number };
+  private cameraParam: { fov: number; lookAt: THREE.Vector3 };
+  private fogParam: { color: number; start: number; end: number };
   public scene: Scene | null;
-  public camera: PerspectiveCamera | null;
-  public renderer: WebGLRenderer | null;
-  public geometry: BufferGeometry | null;
-  public material: PointsMaterial | null;
-  public mesh: Points | null;
-  public isInitialized: boolean;
+  private camera: PerspectiveCamera | null;
+  private renderer: WebGLRenderer | null;
+  private isInitialized: boolean;
   public mouse: { x: number; y: number };
-  public rot: number;
+  private rot: number;
 
   constructor() {
+    this.scene = null;
+    this.camera = null;
+    this.renderer = null;
+    this.isInitialized = false;
+    this.mouse = { x: 0, y: 0 };
+    this.rot = 0;
+
     this.renderParam = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -37,7 +45,7 @@ class Stage {
 
     this.cameraParam = {
       fov: 70,
-      lookAt: new THREE.Vector3(0, 0, 0),
+      lookAt: new Vector3(0, 0, 0),
     };
 
     this.fogParam = {
@@ -46,15 +54,7 @@ class Stage {
       end: 2000,
     };
 
-    this.scene = null;
-    this.camera = null;
-    this.renderer = null;
-    this.geometry = null;
-    this.material = null;
-    this.mesh = null;
-    this.isInitialized = false;
-    this.mouse = { x: 0, y: 0 };
-    this.rot = 0;
+    this.wrapper = document.getElementById("wrapper") || undefined;
   }
 
   init() {
@@ -62,17 +62,18 @@ class Stage {
     this._setRender();
     this._setCamera();
     this._setFog();
+    this._setControls();
 
     this.isInitialized = true;
   }
 
   _setScene() {
-    this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0d0d0d);
+    this.scene = new Scene();
+    this.scene.background = new Color(0x0d0d0d);
   }
 
   _setRender() {
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGLRenderer({
       canvas: document.getElementById("myThreeJsCanvas") ?? undefined,
       alpha: true,
     });
@@ -88,7 +89,7 @@ class Stage {
     const windowHeight = window.innerHeight;
 
     if (!this.isInitialized) {
-      this.camera = new THREE.PerspectiveCamera(
+      this.camera = new PerspectiveCamera(
         this.cameraParam?.fov,
         (this.renderParam?.width ?? window.innerWidth) /
           (this.renderParam?.height ?? window.innerHeight)
@@ -110,9 +111,13 @@ class Stage {
     }
   }
 
+  _setControls() {
+    new OrbitControls(this.camera ?? new PerspectiveCamera(), this.wrapper);
+  }
+
   _setFog() {
     if (this.scene) {
-      this.scene.fog = new THREE.Fog(
+      this.scene.fog = new Fog(
         this.fogParam?.color,
         this.fogParam?.start,
         this.fogParam?.end
@@ -128,26 +133,14 @@ class Stage {
       this.camera.position.x = 1000 * Math.sin(radian);
       // this.camera.position.y = 1000 * Math.cos(radian);
       // this.camera.position.z = 1000 * Math.cos(radian);
-      this.camera.position.set(this.mouse.x, this.mouse.y, 100);
+      // this.camera.position.set(this.mouse.x, this.mouse.y, 100);
       this.renderer?.render(this.scene ?? new Scene(), this.camera);
     }
   }
 
-  // _setMoveCamera() {
-  //   if (this.camera) {
-  //     this.camera.position.x = this.mouse.x;
-  //     this.camera.position.z = this.mouse.y;
-  //     this.renderer?.render(this.scene ?? new Scene(), this.camera);
-  //   }
-  // }
-
   onResize() {
     this._setCamera();
   }
-
-  // onMouseMove() {
-  //   this._setMoveCamera();
-  // }
 
   onRaf() {
     this._render();
@@ -156,11 +149,11 @@ class Stage {
 
 class Mesh {
   public stage: Stage;
-  public mesh: Points | null;
-  public vertices: number[];
-  public colors: number[];
-  public SIZE: number;
-  public LENGTH: number;
+  private mesh: Points | null;
+  private vertices: number[];
+  private colors: number[];
+  private SIZE: number;
+  private LENGTH: number;
 
   constructor(stage: Stage) {
     this.stage = stage;
@@ -176,30 +169,25 @@ class Mesh {
   }
 
   _setMesh() {
-    // const pallet1 = [0, 255, 95, 138];
-    // const pallet2 = [84, 255, 0, 138];
-    // const pallet3 = [255, 255, 255, 255];
     const r = [1, 255];
     const g = [0, 255];
     const b = [255, 255];
-    const geometry = new THREE.BufferGeometry();
-    const material = new THREE.PointsMaterial({
+    const geometry = new BufferGeometry();
+    const material = new PointsMaterial({
       color: 0x888888,
     });
     material.size = 1;
     material.sizeAttenuation = true;
-    material.color = new THREE.Color("#FFFEFF");
-    // material.color = new THREE.Color("#1E1EFF");
+    material.color = new Color("#FFFEFF");
+    // material.color = new Color("#1E1EFF");
     material.transparent = true;
     material.depthWrite = false;
     material.vertexColors = true;
-    // material.alphaTest = 0.001;
 
     for (let i = 0; i < this.LENGTH; i++) {
       const x = this.SIZE * (Math.random() - 0.5);
       const y = this.SIZE * (Math.random() - 0.5);
       const z = this.SIZE * (Math.random() - 0.5);
-      // const idx = Math.round(Math.random() * r.length);
       this.vertices.push(x, y, z);
 
       if (-900 < x && x < 900 && -900 < y && y < 900 && -900 < z && z < 900) {
@@ -211,15 +199,12 @@ class Mesh {
 
     geometry.setAttribute(
       "position",
-      new THREE.Float32BufferAttribute(this.vertices, 3)
+      new Float32BufferAttribute(this.vertices, 3)
     );
 
-    geometry.setAttribute(
-      "color",
-      new THREE.Float32BufferAttribute(this.colors, 3)
-    );
+    geometry.setAttribute("color", new Float32BufferAttribute(this.colors, 3));
 
-    this.mesh = new THREE.Points(geometry, material);
+    this.mesh = new Points(geometry, material);
     this.stage?.scene?.add(this.mesh);
   }
 
@@ -227,7 +212,6 @@ class Mesh {
     if (this.mesh) {
       this.mesh.rotation.x += 0.001;
       this.mesh.rotation.y += 0.001;
-      this.mesh.rotation.z += 0.001;
     }
   }
 
@@ -248,7 +232,7 @@ function Space() {
       stage.onResize();
     });
 
-    document.addEventListener("mousemove", onDocumentMouseMove, false);
+    // document.addEventListener("mousemove", onDocumentMouseMove, false);
 
     function onDocumentMouseMove(event: any) {
       event.preventDefault();
@@ -271,7 +255,7 @@ function Space() {
   }, []);
 
   return (
-    <Wrapper>
+    <Wrapper id="wrapper">
       <canvas id="myThreeJsCanvas" />
     </Wrapper>
   );
