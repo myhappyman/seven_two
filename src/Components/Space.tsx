@@ -10,32 +10,38 @@ import {
   Vector3,
   Color,
   Fog,
+  DirectionalLight,
+  Float32BufferAttribute,
+  BufferAttribute,
 } from "three";
 import { OrbitControls } from "three-orbitcontrols-ts";
-import { Float32BufferAttribute } from "three/src/Three";
 
 const Wrapper = styled.div`
   overflow: hidden;
 `;
 
 class Stage {
-  private wrapper: HTMLElement | undefined;
+  public wrapper: HTMLElement | undefined;
   private renderParam: { width: number; height: number };
   private cameraParam: { fov: number; lookAt: THREE.Vector3 };
   private fogParam: { color: number; start: number; end: number };
   public scene: Scene | null;
   private camera: PerspectiveCamera | null;
+  private light: DirectionalLight | null;
   private renderer: WebGLRenderer | null;
   private isInitialized: boolean;
-  public mouse: { x: number; y: number };
+  public mouse: { x: number; y: number; clientX: number; clientY: number };
   private rot: number;
+  private controls: OrbitControls | null;
 
   constructor() {
+    this.controls = null;
     this.scene = null;
     this.camera = null;
+    this.light = null;
     this.renderer = null;
     this.isInitialized = false;
-    this.mouse = { x: 0, y: 0 };
+    this.mouse = { x: 0, y: 0, clientX: 0, clientY: 0 };
     this.rot = 0;
 
     this.renderParam = {
@@ -59,10 +65,11 @@ class Stage {
 
   init() {
     this._setScene();
-    this._setRender();
+    this._setLight();
     this._setCamera();
     this._setFog();
-    this._setControls();
+    // this._setControls();
+    this._setRender();
 
     this.isInitialized = true;
   }
@@ -92,9 +99,12 @@ class Stage {
       this.camera = new PerspectiveCamera(
         this.cameraParam?.fov,
         (this.renderParam?.width ?? window.innerWidth) /
-          (this.renderParam?.height ?? window.innerHeight)
+          (this.renderParam?.height ?? window.innerHeight),
+        1,
+        500
       );
 
+      this.camera.position.z = 100;
       this.camera.lookAt(this.cameraParam?.lookAt ?? new Vector3(0, 0, 0));
     }
 
@@ -106,8 +116,20 @@ class Stage {
     }
   }
 
+  _setLight() {
+    const color = 0xffffff;
+    const intensity = 1;
+    this.light = new DirectionalLight(color, intensity);
+    this.light.position.set(-1, 2, 4);
+    this.scene?.add(this.light);
+  }
+
   _setControls() {
-    new OrbitControls(this.camera ?? new PerspectiveCamera(), this.wrapper);
+    this.controls = new OrbitControls(
+      this.camera ?? new PerspectiveCamera(),
+      this.wrapper
+    );
+    this.controls.enableDamping = true;
   }
 
   _setFog() {
@@ -121,14 +143,21 @@ class Stage {
   }
 
   _render() {
-    // const radian = ((this.rot + this.mouse.x + this.mouse.y) * Math.PI) / 180;
-    const radian = (this.rot * Math.PI) / 180;
-    this.rot += 0.01;
+    // // const radian = ((this.rot + this.mouse.x + this.mouse.y) * Math.PI) / 180;
+    // const radian = (this.rot * Math.PI) / 180;
+    // this.rot += 0.01;
+    // if (this.camera) {
+    //   this.camera.position.x = 1000 * Math.sin(radian);
+    //   // this.camera.position.y = 1000 * Math.cos(radian);
+    //   // this.camera.position.z = 1000 * Math.cos(radian);
+    //   // this.camera.position.set(this.mouse.x, this.mouse.y, 100);
+    //   this.renderer?.render(this.scene ?? new Scene(), this.camera);
+    // }
+
     if (this.camera) {
-      this.camera.position.x = 1000 * Math.sin(radian);
-      // this.camera.position.y = 1000 * Math.cos(radian);
-      // this.camera.position.z = 1000 * Math.cos(radian);
-      // this.camera.position.set(this.mouse.x, this.mouse.y, 100);
+      this.camera.position.x = Math.sin(this.mouse.x * Math.PI * 2);
+      this.camera.position.y = Math.sin(this.mouse.y * Math.PI * 2);
+      this.camera.position.z = Math.abs(this.mouse.x) * 220 + 100;
       this.renderer?.render(this.scene ?? new Scene(), this.camera);
     }
   }
@@ -144,7 +173,7 @@ class Stage {
 
 class Mesh {
   public stage: Stage;
-  private mesh: Points | null;
+  public mesh: Points | null;
   private vertices: number[];
   private colors: number[];
   private SIZE: number;
@@ -155,8 +184,8 @@ class Mesh {
     this.mesh = null;
     this.vertices = [];
     this.colors = [];
-    this.SIZE = 3000;
-    this.LENGTH = 50000;
+    this.SIZE = 500;
+    this.LENGTH = 20000;
   }
 
   init() {
@@ -164,19 +193,17 @@ class Mesh {
   }
 
   _setMesh() {
-    const r = [1, 255];
+    const refPoint = 160;
+    const r = [0, 255];
     const g = [0, 255];
-    const b = [255, 255];
+    const b = [1, 255];
     const geometry = new BufferGeometry();
     const material = new PointsMaterial({
-      color: 0x888888,
+      color: 0xffffff,
+      size: 1,
+      sizeAttenuation: true,
+      vertexColors: true,
     });
-    material.size = 1;
-    material.sizeAttenuation = true;
-    material.color = new Color("#FFFEFF");
-    material.transparent = true;
-    material.depthWrite = false;
-    material.vertexColors = true;
 
     for (let i = 0; i < this.LENGTH; i++) {
       const x = this.SIZE * (Math.random() - 0.5);
@@ -184,7 +211,16 @@ class Mesh {
       const z = this.SIZE * (Math.random() - 0.5);
       this.vertices.push(x, y, z);
 
-      if (-900 < x && x < 900 && -900 < y && y < 900 && -900 < z && z < 900) {
+      const ran = Math.random() * 10;
+      //랜덤한 원형느낌을 강제로 만들기 위해
+      if (
+        -refPoint - ran < x &&
+        x < refPoint + ran &&
+        -refPoint - ran < y &&
+        y < refPoint + ran &&
+        -refPoint - ran < z &&
+        z < refPoint + ran
+      ) {
         this.colors.push(r[0], g[0], b[0]);
       } else {
         this.colors.push(r[1], g[1], b[1]);
@@ -196,7 +232,10 @@ class Mesh {
       new Float32BufferAttribute(this.vertices, 3)
     );
 
-    geometry.setAttribute("color", new Float32BufferAttribute(this.colors, 3));
+    geometry.setAttribute(
+      "color",
+      new BufferAttribute(new Float32Array(this.colors), 3)
+    );
 
     this.mesh = new Points(geometry, material);
     this.stage?.scene?.add(this.mesh);
@@ -226,11 +265,26 @@ function Space() {
       stage.onResize();
     });
 
+    window.addEventListener("mousemove", (event) => {
+      event.preventDefault();
+      const { clientX, clientY, offsetX, offsetY } = event;
+
+      const gapX = clientX - offsetX;
+      const gapY = clientY - offsetY;
+      const clientWidth = stage?.wrapper ? stage?.wrapper.clientWidth : 0;
+      const clientHeight = stage?.wrapper ? stage?.wrapper.clientHeight : 0;
+
+      stage.mouse.clientX = clientX;
+      stage.mouse.clientY = clientY;
+      stage.mouse.x = ((event.clientX - gapX) / clientWidth) * 2 - 1;
+      stage.mouse.y = -((event.clientY - gapY) / clientHeight) * 2 + 1;
+      // console.log(stage.mouse.x, stage.mouse.y);
+    });
+
     const _raf = () => {
       window.requestAnimationFrame(() => {
         stage.onRaf();
         mesh.onRaf();
-
         _raf();
       });
     };
