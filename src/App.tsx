@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import NewSpace from "./Components/NewSpace";
 import Space from "./Components/Space";
 
 const Wrapper = styled.div``;
@@ -6,7 +7,8 @@ const Wrapper = styled.div``;
 function App() {
   return (
     <Wrapper>
-      <Space />
+      <NewSpace />
+      {/* <Space /> */}
       {/* <Basic /> */}
     </Wrapper>
   );

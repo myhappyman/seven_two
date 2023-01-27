@@ -103,11 +103,6 @@ class Stage {
       this.camera.updateProjectionMatrix();
       this.renderer?.setPixelRatio(window.devicePixelRatio);
       this.renderer?.setSize(windowWidth, windowHeight);
-
-      // this.controls = new OrbitControlsImpl(
-      //   this.camera,
-      //   this.renderer?.domElement
-      // );
     }
   }
 
@@ -179,7 +174,6 @@ class Mesh {
     material.size = 1;
     material.sizeAttenuation = true;
     material.color = new Color("#FFFEFF");
-    // material.color = new Color("#1E1EFF");
     material.transparent = true;
     material.depthWrite = false;
     material.vertexColors = true;
@@ -232,16 +226,6 @@ function Space() {
       stage.onResize();
     });
 
-    // document.addEventListener("mousemove", onDocumentMouseMove, false);
-
-    function onDocumentMouseMove(event: any) {
-      event.preventDefault();
-      // stage.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      // stage.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      stage.mouse.x = event.clientX / 2;
-      stage.mouse.y = event.clientY / 2;
-      // stage.onMouseMove();
-    }
     const _raf = () => {
       window.requestAnimationFrame(() => {
         stage.onRaf();
