@@ -104,7 +104,8 @@ class Stage {
         500
       );
 
-      this.camera.position.z = 100;
+      this.camera.position.x = -0.07;
+      this.camera.position.z = 317;
       this.camera.lookAt(this.cameraParam?.lookAt ?? new Vector3(0, 0, 0));
     }
 
@@ -143,18 +144,9 @@ class Stage {
   }
 
   _render() {
-    // // const radian = ((this.rot + this.mouse.x + this.mouse.y) * Math.PI) / 180;
-    // const radian = (this.rot * Math.PI) / 180;
-    // this.rot += 0.01;
-    // if (this.camera) {
-    //   this.camera.position.x = 1000 * Math.sin(radian);
-    //   // this.camera.position.y = 1000 * Math.cos(radian);
-    //   // this.camera.position.z = 1000 * Math.cos(radian);
-    //   // this.camera.position.set(this.mouse.x, this.mouse.y, 100);
-    //   this.renderer?.render(this.scene ?? new Scene(), this.camera);
-    // }
-
     if (this.camera) {
+      // console.log(Math.abs(this.mouse.x) * 220 + 100);
+      // console.log(Math.sin(this.mouse.x * Math.PI * 2));
       this.camera.position.x = Math.sin(this.mouse.x * Math.PI * 2);
       this.camera.position.y = Math.sin(this.mouse.y * Math.PI * 2);
       this.camera.position.z = Math.abs(this.mouse.x) * 220 + 100;
