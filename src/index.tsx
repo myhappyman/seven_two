@@ -32,7 +32,7 @@ const GlobalStyle = createGlobalStyle`
   @media screen and (min-width:600px){html{font-size:10px !important;}}
   @media screen and (min-width:820px){html{font-size:10px !important;}}
 
-  body {font-size:1rem !important; overflow: hidden;}
+  body {font-size:1rem !important;}
 
   * {
     box-sizing: border-box;

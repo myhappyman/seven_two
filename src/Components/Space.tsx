@@ -18,6 +18,9 @@ import { OrbitControls } from "three-orbitcontrols-ts";
 
 const Wrapper = styled.div`
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
 `;
 
 class Stage {

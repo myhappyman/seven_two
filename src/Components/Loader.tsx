@@ -1,5 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
@@ -20,13 +19,13 @@ const ColorWrap = styled(motion.div)`
   height: 100%;
   transform: rotate(225deg);
 `;
-const Color = styled(motion.div)<{ bgColor: string }>`
+const Color = styled(motion.div)<{ bgcolor: string }>`
   position: relative;
   top: 0;
   right: 0;
   width: 100%;
   height: 20%;
-  background-color: ${(props) => props.bgColor};
+  background-color: ${(props) => props.bgcolor};
 `;
 
 const wrapVariants = {
@@ -38,7 +37,6 @@ const wrapVariants = {
     },
   },
   exit: {
-    opacity: 0,
     transition: {
       staggerChildren: 0.15,
     },
@@ -56,8 +54,7 @@ const colorVariants = {
     },
   },
   exit: {
-    // width: "0%",
-    opacity: 0,
+    width: "0%",
     transition: {
       duration: 1,
     },
@@ -65,36 +62,26 @@ const colorVariants = {
 };
 
 function Loader() {
-  const [show, setShow] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setShow(false);
-    }, 3000);
-  }, []);
   return (
     <Wrapper>
-      {show ? (
-        <ColorWrap
-          variants={wrapVariants}
-          initial="start"
-          animate="end"
-          exit="exit"
-        >
-          <AnimatePresence>
-            <Color variants={colorVariants} bgColor="#e74c3c" />
-            <Color variants={colorVariants} bgColor="#e67e22" />
-            <Color variants={colorVariants} bgColor="#f1c40f" />
-            <Color variants={colorVariants} bgColor="#2ecc71" />
-            <Color variants={colorVariants} bgColor="#1abc9c" />
-            <Color variants={colorVariants} bgColor="#3498db" />
-            <Color variants={colorVariants} bgColor="#9b59b6" />
-            <Color variants={colorVariants} bgColor="#e74c3c" />
-            <Color variants={colorVariants} bgColor="#e67e22" />
-            <Color variants={colorVariants} bgColor="#f1c40f" />
-            <Color variants={colorVariants} bgColor="#2ecc71" />
-          </AnimatePresence>
-        </ColorWrap>
-      ) : null}
+      <ColorWrap
+        variants={wrapVariants}
+        initial="start"
+        animate="end"
+        exit="exit"
+      >
+        <Color variants={colorVariants} bgcolor="#e74c3c" />
+        <Color variants={colorVariants} bgcolor="#e67e22" />
+        <Color variants={colorVariants} bgcolor="#f1c40f" />
+        <Color variants={colorVariants} bgcolor="#2ecc71" />
+        <Color variants={colorVariants} bgcolor="#1abc9c" />
+        <Color variants={colorVariants} bgcolor="#3498db" />
+        <Color variants={colorVariants} bgcolor="#9b59b6" />
+        <Color variants={colorVariants} bgcolor="#e74c3c" />
+        <Color variants={colorVariants} bgcolor="#e67e22" />
+        <Color variants={colorVariants} bgcolor="#f1c40f" />
+        <Color variants={colorVariants} bgcolor="#2ecc71" />
+      </ColorWrap>
     </Wrapper>
   );
 }
