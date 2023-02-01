@@ -152,7 +152,7 @@ class Stage {
       // console.log(Math.sin(this.mouse.x * Math.PI * 2));
       this.camera.position.x = Math.sin(this.mouse.x * Math.PI * 2);
       this.camera.position.y = Math.sin(this.mouse.y * Math.PI * 2);
-      this.camera.position.z = Math.abs(this.mouse.x) * 220 + 100;
+      this.camera.position.z = Math.abs(this.mouse.x) * 320 + 100;
       this.renderer?.render(this.scene ?? new Scene(), this.camera);
     }
   }
