@@ -11,13 +11,8 @@ const List = styled.ul``;
 const Items = styled.li``;
 
 const Item = styled.div`
-  /* display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  margin-bottom: 100px; */
   width: 100%;
-  margin-bottom: 100px;
-  outline: 1px solid yellow;
+
   &::after {
     content: "";
     clear: both;
@@ -28,16 +23,19 @@ const Item = styled.div`
   .isLeft {
     float: left;
   }
+  .l100 {
+    margin-left: 100px;
+  }
+  .r100 {
+    margin-right: 100px;
+  }
 `;
 const Info = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: flex-end;
-
   width: 600px;
-
-  outline: 1px solid red;
 `;
 const Name = styled.div`
   font-size: 72px;
@@ -52,7 +50,6 @@ const Type = styled.div`
 const ImgArea = styled.div`
   float: right;
   width: 800px;
-  outline: 1px solid blue;
   img {
     width: 100%;
   }
@@ -60,6 +57,7 @@ const ImgArea = styled.div`
 
 const Clear = styled.div`
   clear: both;
+  margin-bottom: 100px;
 `;
 
 function Works() {
@@ -67,24 +65,24 @@ function Works() {
     <Wrapper>
       <List>
         <Items>
-          <Item className="isRight">
-            <ImgArea>
+          <Item>
+            <ImgArea className="isRight">
               <img src={locus} alt="locus" />
             </ImgArea>
-            <Info>
+            <Info className="isRight r100">
               <Name>LOCUS-X</Name>
               <Type>WEBSITE</Type>
             </Info>
           </Item>
           <Clear />
-          <Item className="isLeft">
-            <Info>
+          <Item>
+            <ImgArea className="isLeft">
+              <img src={hanwhacalendar} alt="lohanwhacalendarcus" />
+            </ImgArea>
+            <Info className="isLeft l100">
               <Name>한화그룹캘린더 2023</Name>
               <Type>WEBSITE</Type>
             </Info>
-            <ImgArea>
-              <img src={hanwhacalendar} alt="lohanwhacalendarcus" />
-            </ImgArea>
           </Item>
         </Items>
       </List>
