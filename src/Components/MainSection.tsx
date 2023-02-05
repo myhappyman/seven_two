@@ -2,13 +2,13 @@ import styled from "styled-components";
 import { useState } from "react";
 import Headers from "./Headers";
 import useInterval from "../useInterval";
-import Works from "./Works";
 
 const Wrapper = styled.div`
-  width: 100%;
   position: relative;
   top: 0;
   left: 0;
+  min-width: 1400px;
+  height: 820px;
 `;
 
 const Main = styled.div`
@@ -32,7 +32,8 @@ const SelectWorks = styled.div`
   top: 700px;
   left: 60%;
   color: #fff;
-  font-size: 72px;
+  font-size: 36px;
+  font-weight: 700;
 `;
 
 function MainSection() {
@@ -239,7 +240,6 @@ function MainSection() {
         <Slogan>{slogan}</Slogan>
       </Main>
       <SelectWorks>Selected Works↓</SelectWorks>
-      <Works />
     </Wrapper>
   );
 }
