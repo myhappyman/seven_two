@@ -1,15 +1,22 @@
+import { useState, useEffect } from "react";
+import { useAnimation, useScroll } from "framer-motion";
 import styled from "styled-components";
 import logoSvg from "../assets/img/72dot_light.svg";
 
-const Header = styled.div`
-  padding: 80px 120px 0;
+const Header = styled.div<{ isFixed: boolean }>`
+  position: ${(props) => (props.isFixed ? "fixed" : "relative")};
+  top: ${(props) => (props.isFixed ? "0px" : "15px")};
+  width: 100%;
+  padding: ${(props) => (props.isFixed ? "0px 120px" : "80px 120px 0")};
+  mix-blend-mode: difference;
+  z-index: 9999;
 `;
 
 const Logo = styled.div`
+  /* position: absolute; */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-right: 15px;
   img {
     height: 80px;
   }
@@ -31,8 +38,22 @@ const Burger = styled.div`
 `;
 
 function Headers() {
+  const [isFixed, setIsFixed] = useState(false);
+  const { scrollY } = useScroll();
+  const navAnimation = useAnimation();
+
+  useEffect(() => {
+    scrollY.onChange(() => {
+      if (scrollY.get() > 120) {
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
+      }
+    });
+  }, [navAnimation, scrollY]);
+
   return (
-    <Header>
+    <Header isFixed={isFixed}>
       <Logo>
         <img src={logoSvg} alt="logo" />
         <Burger>
