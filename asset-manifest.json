@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.js": "/seven_two/static/js/main.805527da.js",
+    "static/media/sdw.webp": "/seven_two/static/media/sdw.50e166822be97f4e42ef.webp",
+    "static/media/mbc.webp": "/seven_two/static/media/mbc.b14ae65c1179fc46b16f.webp",
+    "static/media/blash.webp": "/seven_two/static/media/blash.28c42d7fc91e649eef66.webp",
+    "static/media/ryupizza.webp": "/seven_two/static/media/ryupizza.88894d1863b35e706424.webp",
+    "static/media/aftersales.webp": "/seven_two/static/media/aftersales.b711b6dd495f0776d539.webp",
+    "static/media/capture.webp": "/seven_two/static/media/capture.b8ae9be8a661344ddc4c.webp",
+    "static/media/locus.webp": "/seven_two/static/media/locus.1e32473cccf69c45d45a.webp",
+    "static/media/lgchem.webp": "/seven_two/static/media/lgchem.69b2ad8ffd03cedf4c83.webp",
+    "static/media/hanwhacalendar2022.webp": "/seven_two/static/media/hanwhacalendar2022.01ffc97be0db8791af16.webp",
+    "static/media/hanwhacalendar.webp": "/seven_two/static/media/hanwhacalendar.8fa09f0cbfbba1bedae8.webp",
+    "index.html": "/seven_two/index.html",
+    "static/media/72dot_light.svg": "/seven_two/static/media/72dot_light.7bf524fafd6ca24a1e874a51f716e37d.svg",
+    "main.805527da.js.map": "/seven_two/static/js/main.805527da.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.805527da.js"
+  ]
+}
