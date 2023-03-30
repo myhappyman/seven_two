@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/seven_two/static/js/main.805527da.js",
+    "main.js": "/seven_two/static/js/main.1dd8df89.js",
     "static/media/sdw.webp": "/seven_two/static/media/sdw.50e166822be97f4e42ef.webp",
     "static/media/mbc.webp": "/seven_two/static/media/mbc.b14ae65c1179fc46b16f.webp",
     "static/media/blash.webp": "/seven_two/static/media/blash.28c42d7fc91e649eef66.webp",
@@ -13,9 +13,9 @@
     "static/media/hanwhacalendar.webp": "/seven_two/static/media/hanwhacalendar.8fa09f0cbfbba1bedae8.webp",
     "index.html": "/seven_two/index.html",
     "static/media/72dot_light.svg": "/seven_two/static/media/72dot_light.7bf524fafd6ca24a1e874a51f716e37d.svg",
-    "main.805527da.js.map": "/seven_two/static/js/main.805527da.js.map"
+    "main.1dd8df89.js.map": "/seven_two/static/js/main.1dd8df89.js.map"
   },
   "entrypoints": [
-    "static/js/main.805527da.js"
+    "static/js/main.1dd8df89.js"
   ]
 }
