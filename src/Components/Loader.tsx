@@ -9,6 +9,7 @@ const Wrapper = styled.div`
   left: -1300px;
   width: 200%;
   height: 100%;
+  z-index: 99;
 `;
 
 const ColorWrap = styled(motion.div)`

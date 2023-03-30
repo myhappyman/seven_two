@@ -12,7 +12,7 @@ import sdw from "../assets/img/sdw.webp";
 
 const Wrapper = styled.div`
   position: relative;
-  min-width: 1400px;
+  cursor: pointer;
 `;
 
 const List = styled.ul``;
